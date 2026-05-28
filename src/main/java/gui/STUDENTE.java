@@ -74,16 +74,6 @@ public class STUDENTE extends JFrame{
         tabellaOrario = new JTable();
         scrollPane1 = new JScrollPane();
     }
-
-    public static void main(String[] args) {
-        Controller fintoController = new Controller();
-        model.Studente fintoStudente = new model.Studente("Mario", "Rossi", "mario@email.it", "password123", "MAT001", 2);
-
-        SwingUtilities.invokeLater(() -> {
-            STUDENTE finestraTest = new STUDENTE(fintoController, fintoStudente);
-            finestraTest.setVisible(true);
-        });
-    }
 }
 
 

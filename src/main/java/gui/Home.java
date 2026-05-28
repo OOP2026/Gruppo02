@@ -58,13 +58,4 @@ public class Home extends JFrame {
             this.dispose();
         });
     }
-
-    public static void main(String[] args) {
-        controller.Controller controllerGenerale = new controller.Controller();
-
-        SwingUtilities.invokeLater(() -> {
-            gui.Home schermataIniziale = new gui.Home(controllerGenerale);
-            schermataIniziale.setVisible(true);
-        });
-    }
 }

@@ -254,17 +254,4 @@ public class DOCENTE extends JFrame {
             JOptionPane.showMessageDialog(this, "Richiesta inviata con successo al Responsabile!", "Operazione completata", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
-    public static void main(String[] args) {
-        Controller controllerTest = new Controller();
-        Docente profTest = new Docente("Alan", "Turing", "alan.turing@uni.it", "password");
-        profTest.aggiungiVincolo(new Vincolo("Lunedì", "08:00", "10:00"));
-        profTest.aggiungiVincolo(new Vincolo("Mercoledì", "14:00", "16:00"));
-        controllerTest.setUtenteLoggato(profTest);
-
-        java.awt.EventQueue.invokeLater(() -> {
-            DOCENTE frame = new DOCENTE(controllerTest, profTest);
-            frame.setVisible(true);
-        });
-    }
 }
