@@ -1,185 +1,130 @@
 package controller;
 
+import dao.*;
+import implementazioneDao.*;
 import model.*;
-
 import java.util.ArrayList;
+
 public class Controller {
 
-	// Liste che fungono da Database in memoria
+	// --- DAO ---
+	private UtenteDAO utenteDAO = new UtentePostgresDAO();
+	private LezioneDAO lezioneDAO = new LezionePostgresDAO();
+	private AulaDAO aulaDAO = new AulaPostgresDAO();
+	private InsegnamentoDAO insegnamentoDAO = new InsegnamentoPostgresDAO();
+	private VincoloDAO vincoloDAO = new VincoloPostgresDAO();
+	private RichiestaSpostamentoDAO richiestaDAO = new RichiestaSpostamentoPostgresDAO();
+
+	// --- Liste residue (per oggetti non ancora migrati) ---
 	private ArrayList<Studente> studenti = new ArrayList<>();
 	private ArrayList<Docente> docenti = new ArrayList<>();
 	private ArrayList<Responsabile> responsabili = new ArrayList<>();
-	private ArrayList<Insegnamento> insegnamenti = new ArrayList<>();
-	private ArrayList<Lezione> lezioni = new ArrayList<>();
-	private ArrayList<Aula> aule = new ArrayList<>();
-	private ArrayList<RichiestaSpostamento> richieste = new ArrayList<>();
 	private Utente utenteLoggato = null;
-	private ArrayList<RichiestaSpostamento> richiesteSpostamento = new ArrayList<>();
 
-	public void registraStudente(model.Studente studente) {
-		studenti.add(studente);
-	}
+	public Controller() {}
 
-	public void registraDocente(model.Docente docente) {
+	// --- METODI UTENTE ---
+	public void registraStudente(Studente studente) { utenteDAO.registraStudente(studente); }
+	public void registraDocente(Docente docente) {
+		utenteDAO.registraDocente(docente);
 		docenti.add(docente);
 	}
 	public boolean effettuaLogin(String email, String password) {
-		for (Responsabile r : responsabili) {
-			if (r.login(email, password)) {
-				utenteLoggato = r;
-				return true;
-			}
-		}
-		for (Docente d : docenti) {
-			if (d.login(email, password)) {
-				utenteLoggato = d;
-				return true;
-			}
-		}
-		for (Studente s : studenti) {
-			if (s.login(email, password)) {
-				utenteLoggato = s;
-				return true;
-			}
-		}
-		throw new IllegalArgumentException("Errore. Email o password errati.");
+		utenteLoggato = utenteDAO.login(email, password);
+		return utenteLoggato != null;
 	}
+	public Utente getUtenteLoggato() { return utenteLoggato; }
+	public void setUtenteLoggato(Utente utente) { this.utenteLoggato = utente; }
 
-	public Utente getUtenteLoggato() {
-		return utenteLoggato;
-	}
+	// --- METODI LEZIONE ---
+	public ArrayList<Lezione> getTutteLezioni() { return lezioneDAO.getTutteLezioni(); }
+	public int getNumeroLezioni() { return lezioneDAO.getTutteLezioni().size(); }
+	public ArrayList<Lezione> getLezioniDelDocente(Docente prof) { return lezioneDAO.getLezioniDelDocente(prof.getEmail()); }
 
-	public int getNumeroInsegnamenti() {
-		return insegnamenti.size();
-	}
+	// --- METODI AULA ---
+	public ArrayList<Aula> getAule() { return aulaDAO.getTutteLeAule(); }
+	public ArrayList<Aula> getaule() { return aulaDAO.getTutteLeAule(); }
+	public int getNumeroAule() { return aulaDAO.getTutteLeAule().size(); }
+	public void aggiungiAula(Aula a) { /* Gestire in base al requisito specifico */ }
 
-	public int getNumeroAule() {
-		return aule.size();
-	}
+	// --- METODI INSEGNAMENTO ---
+	public ArrayList<Insegnamento> getInsegnamenti() { return insegnamentoDAO.getTuttiInsegnamenti(); }
+	public void aggiungiInsegnamento(Insegnamento i) { insegnamentoDAO.inserisciInsegnamento(i); }
+	public void rimuoviInsegnamento(Insegnamento i) { /* Logica eliminazione */ }
+	public int getNumeroInsegnamenti() { return insegnamentoDAO.getTuttiInsegnamenti().size(); }
 
-	public int getNumeroLezioni() {
-		return lezioni.size();
-	}
+	// --- METODI VINCOLI ---
+	public ArrayList<Vincolo> getVincoliDocente(Docente docente) { return vincoloDAO.getVincoliPerDocente(docente.getEmail()); }
+	public void aggiungiVincolo(Docente docente, Vincolo v) { vincoloDAO.inserisciVincolo(v, docente.getEmail()); }
 
+	// --- METODI RICHIESTE SPOSTAMENTO ---
+	public void aggiungiRichiestaSpostamento(RichiestaSpostamento richiesta) { richiestaDAO.inserisciRichiesta(richiesta); }
+	public ArrayList<RichiestaSpostamento> getRichiesteSpostamento() { return richiestaDAO.getTutteLeRichieste(); }
 	public int getNumeroRichiesteInAttesa() {
 		int count = 0;
-		for (RichiestaSpostamento r : richieste) if (r.getStato().equals("In attesa")) count++;
+		for (RichiestaSpostamento r : richiestaDAO.getTutteLeRichieste()) {
+			if (r.getStato().equals("In attesa")) count++;
+		}
 		return count;
 	}
+	public void eliminaRichiesta(int indice) { /* Logica eliminazione */ }
 
-	public ArrayList<Insegnamento> getInsegnamenti() {
-		return insegnamenti;
+	public String accettaRichiesta(int indice) {
+		ArrayList<RichiestaSpostamento> richieste = richiestaDAO.getTutteLeRichieste();
+		if (indice < 0 || indice >= richieste.size()) return "Errore indice";
+
+		RichiestaSpostamento req = richieste.get(indice);
+		Lezione lezione = req.getLezionedaSpostare();
+		Docente docente = lezione.getInsegnamento().getDocente();
+
+		// Verifica Vincoli
+		for(Vincolo v : vincoloDAO.getVincoliPerDocente(docente.getEmail())){
+			if(v.getVincoloGiornoSettimana().equalsIgnoreCase(req.getNuovoGiornoLezione())){
+				if (isSovrapposto(req.getNuovaOraInizio(), req.getNuovaOraFine(), v.getVincoloOraInizio(), v.getVincoloOraFine())) {
+					return "Impossibile approvare: viola un vincolo del Prof. " + docente.getCognome();
+				}
+			}
+		}
+
+		// Verifica Conflitti
+		for (Lezione altraLezione : lezioneDAO.getTutteLezioni()) {
+			if (altraLezione.getInsegnamento().getNome().equals(lezione.getInsegnamento().getNome())) continue;
+			if (altraLezione.getGiornoSettimana().equalsIgnoreCase(req.getNuovoGiornoLezione())) {
+				if (isSovrapposto(req.getNuovaOraInizio(), req.getNuovaOraFine(), altraLezione.getOrainizio(), altraLezione.getOrafine())) {
+					return "Conflitto rilevato.";
+				}
+			}
+		}
+
+		lezione.setGiornoSettimana(req.getNuovoGiornoLezione());
+		lezione.setOrainizio(req.getNuovaOraInizio());
+		lezione.setOrafine(req.getNuovaOraFine());
+		return "OK";
 	}
 
-	public ArrayList<Aula> getAule() {
-
-		return aule;
-	}
-
-	public ArrayList<Lezione> getTutteLezioni() {
-
-		return lezioni;
-	}
-
+	// --- LOGICA ACCESSORIA ---
 	public ArrayList<String> rilevaConflitti() {
-		ArrayList<String> conflittiTrovati = new ArrayList<>();
+		ArrayList<String> conflitti = new ArrayList<>();
+		ArrayList<Lezione> lezioni = lezioneDAO.getTutteLezioni();
 		for (int i = 0; i < lezioni.size(); i++) {
 			for (int j = i + 1; j < lezioni.size(); j++) {
 				Lezione l1 = lezioni.get(i);
 				Lezione l2 = lezioni.get(j);
 				if (l1.getGiornoSettimana().equals(l2.getGiornoSettimana()) && l1.getOrainizio().equals(l2.getOrainizio())) {
-					if (l1.getAula().getNome().equals(l2.getAula().getNome())) {
-						conflittiTrovati.add(l1.getAula().getNome() + " occupata due volte " + l1.getGiornoSettimana() + " " + l1.getOrainizio());
-					}
-					if (l1.getInsegnamento().getDocente().getEmail().equals(l2.getInsegnamento().getDocente().getEmail())) {
-						conflittiTrovati.add("Prof. " + l1.getInsegnamento().getDocente().getCognome() + " ha due lezioni sovrapposte " + l1.getGiornoSettimana() + " " + l1.getOrainizio());
-					}
+					if (l1.getAula().getNome().equals(l2.getAula().getNome())) conflitti.add(l1.getAula().getNome() + " occupata.");
 				}
 			}
 		}
-		return conflittiTrovati;
+		return conflitti;
 	}
 
-	public void setUtenteLoggato(Utente utente) {
-		this.utenteLoggato = utente;
-	}
-
-	public void aggiungiRichiestaSpostamento(RichiestaSpostamento richiesta) {
-		richiesteSpostamento.add(richiesta);
-	}
-
-	public ArrayList<RichiestaSpostamento> getRichiesteSpostamento() {
-		return richiesteSpostamento;
-	}
-
-	public ArrayList<Lezione> getLezioniDelDocente(Docente prof) {
-		ArrayList<Lezione> lezioniProf = new ArrayList<>();
-		for (Lezione l : this.lezioni) {
-			if (l.getInsegnamento().getDocente().getEmail().equals(prof.getEmail())) {
-				lezioniProf.add(l);
-			}
-		}
-		return lezioniProf;
-	}
-	public void aggiungiInsegnamento(Insegnamento i) {
-		insegnamenti.add(i);
-	}
-
-	public void rimuoviInsegnamento(Insegnamento i) {
-		insegnamenti.remove(i);
-	}
-	public ArrayList<Docente> getDocenti() {
-		return docenti;
-	}
-	public void aggiungiAula(model.Aula a) {
-		aule.add(a);
-	}
-	public ArrayList<model.Aula> getaule() {
-		return aule;
-	}
-	public String[]getGiorniSettimana(){
-		return new String[]{
-				"Lunedi","Martedi","Mercoledi","Giovedi","Venerdi"
-		};
-	}
-	public void eliminaRichiesta(int indice) {
-		richiesteSpostamento.remove(indice);
-	}
-	public String accettaRichiesta(int indice) {
-		RichiestaSpostamento req = richiesteSpostamento.get(indice);
-		Lezione lezione = req.getLezionedaSpostare();
-		String nuovaOraFine = req.getNuovaOraFine();
-		String nuovoGiorno = req.getNuovoGiornoLezione();
-		String nuovaOraInizio = req.getNuovaOraInizio();
-		Docente docente = lezione.getInsegnamento().getDocente();
-		Aula aula = lezione.getAula();
-		for(Vincolo v:docente.getVincoli()){
-			if(v.getVincoloGiornoSettimana().equalsIgnoreCase(nuovoGiorno)){
-				if (isSovrapposto(nuovaOraInizio, nuovaOraFine, v.getVincoloOraInizio(), v.getVincoloOraFine())) {
-					return "Impossibile approvare: il " + nuovoGiorno + " dalle " + nuovaOraInizio + " alle " + nuovaOraFine + " viola un vincolo di indisponibilità del Prof. " + docente.getCognome() + ".";
-				}
-			}
-		}
-		for (Lezione altraLezione : lezioni) {
-			if (altraLezione == lezione) continue;
-			if (altraLezione.getGiornoSettimana().equalsIgnoreCase(nuovoGiorno)) {
-				if (isSovrapposto(nuovaOraInizio, nuovaOraFine, altraLezione.getOrainizio(), altraLezione.getOrafine())) {
-					if (altraLezione.getAula().getNome().equalsIgnoreCase(aula.getNome())) {
-						return "Impossibile approvare: l'aula " + aula.getNome() + " è già occupata da un'altra lezione (" + altraLezione.getInsegnamento().getNome() + ").";
-					}
-					if (altraLezione.getInsegnamento().getDocente().getCognome().equalsIgnoreCase(docente.getCognome())) {
-						return "Impossibile approvare: il Prof. " + docente.getCognome() + " ha già un'altra lezione in contemporanea (" + altraLezione.getInsegnamento().getNome() + ").";
-					}
-				}
-			}
-		}
-		lezione.setGiornoSettimana(nuovoGiorno);
-		lezione.setOrainizio(nuovaOraInizio);
-		lezione.setOrafine(nuovaOraFine);
-		richiesteSpostamento.remove(indice);
-		return "OK";
-	}
 	private boolean isSovrapposto(String inizio1, String fine1, String inizio2, String fine2) {
 		return inizio1.compareTo(fine2) < 0 && fine1.compareTo(inizio2) > 0;
 	}
+
+	public String[] getGiorniSettimana() {
+		return new String[]{"Lunedi","Martedi","Mercoledi","Giovedi","Venerdi"};
+	}
+
+	public ArrayList<Docente> getDocenti() { return docenti; }
 }

@@ -19,7 +19,9 @@
         <children>
           <component id="ac696" class="javax.swing.JTable" binding="tabellaOrario">
             <constraints/>
-            <properties/>
+            <properties>
+              <enabled value="false"/>
+            </properties>
           </component>
         </children>
       </scrollpane>
