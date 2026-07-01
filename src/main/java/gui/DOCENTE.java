@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import controller.Controller;
 import model.Docente;
 import model.Vincolo;
+import java.util.ArrayList;
 
 public class DOCENTE extends JFrame {
     private Controller controller;
@@ -44,7 +45,7 @@ public class DOCENTE extends JFrame {
         setLocationRelativeTo(null);
 
         setupTabellaOrario();
-        setupListaVincoli();
+        setupListaVincoli(); // Ora questo metodo scaricherà i vincoli dal Database!
 
         aggiungiVincoloButton.addActionListener((ActionEvent e) -> {
             apriPopupAggiungiVincolo();
@@ -58,7 +59,14 @@ public class DOCENTE extends JFrame {
             int indiceSelezionato = listavincoli.getSelectedIndex();
             if (indiceSelezionato != -1) {
                 model.Vincolo vDaRimuovere = prof.getVincoli().get(indiceSelezionato);
+
+                // 1. Lo rimuoviamo dalla memoria temporanea
                 prof.rimuoviVincolo(vDaRimuovere);
+
+                // 2. Lo comunichiamo al DATABASE tramite il Controller! (MANCAVA QUESTO)
+                controller.rimuoviVincolo(vDaRimuovere);
+
+                // 3. Aggiorniamo la grafica
                 modelloVincoli.remove(indiceSelezionato);
             } else {
                 JOptionPane.showMessageDialog(this, "Seleziona prima un vincolo dalla lista per rimuoverlo.", "Attenzione", JOptionPane.WARNING_MESSAGE);
@@ -136,7 +144,18 @@ public class DOCENTE extends JFrame {
     private void setupListaVincoli() {
         modelloVincoli = new DefaultListModel<>();
         listavincoli.setModel(modelloVincoli);
-        if (prof != null && prof.getVincoli() != null) {
+
+        if (prof != null) {
+            // SCARICHIAMO I VINCOLI DAL DATABASE (MANCAVA QUESTO)
+            ArrayList<Vincolo> vincoliDalDB = controller.getVincoliDocente(prof);
+
+            // Sincronizziamo la lista in memoria del professore
+            prof.getVincoli().clear();
+            for(Vincolo v : vincoliDalDB) {
+                prof.getVincoli().add(v);
+            }
+
+            // Mostriamoli nella lista visiva
             for (Vincolo v : prof.getVincoli()) {
                 modelloVincoli.addElement(v.getVincoloGiornoSettimana() + " " + v.getVincoloOraInizio() + "-" + v.getVincoloOraFine());
             }
@@ -170,7 +189,13 @@ public class DOCENTE extends JFrame {
                 return;
             }
 
+            // Aggiungiamo alla memoria del prof (controlla anche il limite di 3)
             if (prof.aggiungiVincolo(nuovoVincolo)) {
+
+                // SALVIAMO SUL DATABASE TRAMITE IL CONTROLLER! (MANCAVA QUESTO)
+                controller.aggiungiVincolo(prof, nuovoVincolo);
+
+                // Mostriamo nella grafica
                 modelloVincoli.addElement(giorno + " " + inizio + " - " + fine);
             } else {
                 JOptionPane.showMessageDialog(this, "Hai già inserito il numero massimo di 3 vincoli!", "Limite Raggiunto", JOptionPane.WARNING_MESSAGE);
