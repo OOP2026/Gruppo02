@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class Controller {
 
-	// --- DAO ---
 	private UtenteDAO utenteDAO = new UtentePostgresDAO();
 	private LezioneDAO lezioneDAO = new LezionePostgresDAO();
 	private AulaDAO aulaDAO = new AulaPostgresDAO();
@@ -15,7 +14,6 @@ public class Controller {
 	private VincoloDAO vincoloDAO = new VincoloPostgresDAO();
 	private RichiestaSpostamentoDAO richiestaDAO = new RichiestaSpostamentoPostgresDAO();
 
-	// --- Liste residue ---
 	private ArrayList<Studente> studenti = new ArrayList<>();
 	private ArrayList<Docente> docenti = new ArrayList<>();
 	private ArrayList<Responsabile> responsabili = new ArrayList<>();
@@ -23,110 +21,61 @@ public class Controller {
 
 	public Controller() {}
 
-	// =======================================
-	// METODI UTENTE
-	// =======================================
-	public void registraStudente(Studente studente) {
-		utenteDAO.registraStudente(studente);
-	}
-
+	public void registraStudente(Studente studente) { utenteDAO.registraStudente(studente); }
 	public void registraDocente(Docente docente) {
 		utenteDAO.registraDocente(docente);
 		docenti.add(docente);
 	}
-
 	public boolean effettuaLogin(String email, String password) {
 		utenteLoggato = utenteDAO.login(email, password);
 		return utenteLoggato != null;
 	}
-
 	public Utente getUtenteLoggato() { return utenteLoggato; }
 	public void setUtenteLoggato(Utente utente) { this.utenteLoggato = utente; }
 	public ArrayList<Docente> getDocenti() { return docenti; }
 
-	// =======================================
-	// METODI LEZIONE
-	// =======================================
 	public ArrayList<Lezione> getTutteLezioni() { return lezioneDAO.getTutteLezioni(); }
 	public int getNumeroLezioni() { return lezioneDAO.getTutteLezioni().size(); }
 	public ArrayList<Lezione> getLezioniDelDocente(Docente prof) { return lezioneDAO.getLezioniDelDocente(prof.getEmail()); }
 
 	public boolean creaLezione(Lezione nuovaLezione) {
-		// 1. Controlliamo se il professore ha un vincolo per quel giorno/ora
 		Docente docente = nuovaLezione.getInsegnamento().getDocente();
 		for (Vincolo v : vincoloDAO.getVincoliPerDocente(docente.getEmail())) {
 			if (v.getVincoloGiornoSettimana().equalsIgnoreCase(nuovaLezione.getGiornoSettimana())) {
-				// Se c'è sovrapposizione tra la lezione e il vincolo, blocca la creazione!
 				if (isSovrapposto(nuovaLezione.getOrainizio(), nuovaLezione.getOrafine(), v.getVincoloOraInizio(), v.getVincoloOraFine())) {
 					return false;
 				}
 			}
 		}
-
-		// 2. Controlliamo se c'è un accavallamento con un'altra lezione (Aula o Docente occupati)
-		if (rilevaConflitti(nuovaLezione)) {
-			return false;
-		}
-
-		// 3. Se supera entrambi i controlli, la inserisce nel database
+		if (rilevaConflitti(nuovaLezione)) { return false; }
 		return lezioneDAO.inserisciLezione(nuovaLezione);
 	}
 
-	public void eliminaLezione(Lezione lezione) {
-		lezioneDAO.eliminaLezione(lezione);
-	}
+	public void eliminaLezione(Lezione lezione) { lezioneDAO.eliminaLezione(lezione); }
 
-	// =======================================
-	// METODI AULA
-	// =======================================
 	public ArrayList<Aula> getAule() { return aulaDAO.getTutteLeAule(); }
 	public ArrayList<Aula> getaule() { return aulaDAO.getTutteLeAule(); }
 	public int getNumeroAule() { return aulaDAO.getTutteLeAule().size(); }
+	public void aggiungiAula(Aula a) { aulaDAO.inserisciAula(a); }
+	public void rimuoviAula(Aula a) { aulaDAO.eliminaAula(a); }
 
-	public void aggiungiAula(Aula a) {
-		aulaDAO.inserisciAula(a);
-	}
-
-	public void rimuoviAula(Aula a) {
-		aulaDAO.eliminaAula(a);
-	}
-
-	// =======================================
-	// METODI INSEGNAMENTO
-	// =======================================
 	public ArrayList<Insegnamento> getInsegnamenti() { return insegnamentoDAO.getTuttiInsegnamenti(); }
 	public int getNumeroInsegnamenti() { return insegnamentoDAO.getTuttiInsegnamenti().size(); }
 	public void aggiungiInsegnamento(Insegnamento i) { insegnamentoDAO.inserisciInsegnamento(i); }
+	public void rimuoviInsegnamento(Insegnamento i) { insegnamentoDAO.eliminaInsegnamento(i); }
 
-	public void rimuoviInsegnamento(Insegnamento i) {
-		insegnamentoDAO.eliminaInsegnamento(i);
-	}
-
-	// =======================================
-	// METODI VINCOLI
-	// =======================================
 	public ArrayList<Vincolo> getVincoliDocente(Docente docente) { return vincoloDAO.getVincoliPerDocente(docente.getEmail()); }
 	public void aggiungiVincolo(Docente docente, Vincolo v) { vincoloDAO.inserisciVincolo(v, docente.getEmail()); }
-
 	public void rimuoviVincolo(Vincolo v) {
-		if (utenteLoggato != null) {
-			vincoloDAO.eliminaVincolo(v, utenteLoggato.getEmail());
-		}
+		if (utenteLoggato != null) { vincoloDAO.eliminaVincolo(v, utenteLoggato.getEmail()); }
 	}
 
-	// =======================================
-	// METODI RICHIESTE SPOSTAMENTO
-	// =======================================
-	public void aggiungiRichiestaSpostamento(RichiestaSpostamento richiesta) {
-		richiestaDAO.inserisciRichiesta(richiesta);
-	}
-
+	public void aggiungiRichiestaSpostamento(RichiestaSpostamento richiesta) { richiestaDAO.inserisciRichiesta(richiesta); }
 	public ArrayList<RichiestaSpostamento> getRichiesteSpostamento() { return richiestaDAO.getTutteLeRichieste(); }
-
 	public int getNumeroRichiesteInAttesa() {
 		int count = 0;
 		for (RichiestaSpostamento r : richiestaDAO.getTutteLeRichieste()) {
-			if (r.getStato().equals("In attesa")) count++;
+			if ("In attesa".equals(r.getStato())) count++;
 		}
 		return count;
 	}
@@ -147,7 +96,6 @@ public class Controller {
 		Lezione lezione = req.getLezionedaSpostare();
 		Docente docente = lezione.getInsegnamento().getDocente();
 
-		// Verifica che il nuovo orario non violi i vincoli del docente
 		for(Vincolo v : vincoloDAO.getVincoliPerDocente(docente.getEmail())){
 			if(v.getVincoloGiornoSettimana().equalsIgnoreCase(req.getNuovoGiornoLezione())){
 				if (isSovrapposto(req.getNuovaOraInizio(), req.getNuovaOraFine(), v.getVincoloOraInizio(), v.getVincoloOraFine())) {
@@ -156,7 +104,6 @@ public class Controller {
 			}
 		}
 
-		// Verifica che il nuovo orario non si accavalli con altre lezioni esistenti
 		for (Lezione altraLezione : lezioneDAO.getTutteLezioni()) {
 			if (altraLezione.getInsegnamento().getNome().equals(lezione.getInsegnamento().getNome())) continue;
 			if (altraLezione.getGiornoSettimana().equalsIgnoreCase(req.getNuovoGiornoLezione())) {
@@ -165,7 +112,6 @@ public class Controller {
 				}
 			}
 		}
-
 
 		lezioneDAO.eliminaLezione(lezione);
 		lezione.setGiornoSettimana(req.getNuovoGiornoLezione());
@@ -177,20 +123,12 @@ public class Controller {
 		return "OK";
 	}
 
-	// =======================================
-	// LOGICA DI CONTROLLO SOVRAPPOSIZIONI
-	// =======================================
 	public boolean rilevaConflitti(Lezione nuovaLezione) {
 		for (Lezione l : lezioneDAO.getTutteLezioni()) {
 			if (l.getGiornoSettimana().equalsIgnoreCase(nuovaLezione.getGiornoSettimana()) &&
 					l.getOrainizio().equals(nuovaLezione.getOrainizio())) {
-
-				if (l.getAula().getNome().equalsIgnoreCase(nuovaLezione.getAula().getNome())) {
-					return true;
-				}
-				if (l.getInsegnamento().getDocente().getEmail().equals(nuovaLezione.getInsegnamento().getDocente().getEmail())) {
-					return true;
-				}
+				if (l.getAula().getNome().equalsIgnoreCase(nuovaLezione.getAula().getNome())) { return true; }
+				if (l.getInsegnamento().getDocente().getEmail().equals(nuovaLezione.getInsegnamento().getDocente().getEmail())) { return true; }
 			}
 		}
 		return false;
@@ -219,5 +157,26 @@ public class Controller {
 
 	public String[] getGiorniSettimana() {
 		return new String[]{"Lunedi","Martedi","Mercoledi","Giovedi","Venerdi"};
+	}
+
+	// --- NUOVI METODI CENTRALIZZATI PER ELIMINARE LA DUPLICAZIONE ---
+	public int getColonnaGiorno(String giorno) {
+		if (giorno == null) return -1;
+		switch (giorno.toLowerCase()) {
+			case "lunedì": case "lunedi": return 1;
+			case "martedì": case "martedi": return 2;
+			case "mercoledì": case "mercoledi": return 3;
+			case "giovedì": case "giovedi": return 4;
+			case "venerdì": case "venerdi": return 5;
+			default: return -1;
+		}
+	}
+
+	public int getRigaOrario(String oraInizio, String[] fasceOrarie) {
+		if (oraInizio == null || fasceOrarie == null) return -1;
+		for (int i = 0; i < fasceOrarie.length; i++) {
+			if (oraInizio.startsWith(fasceOrarie[i].substring(0, 2))) { return i; }
+		}
+		return -1;
 	}
 }
