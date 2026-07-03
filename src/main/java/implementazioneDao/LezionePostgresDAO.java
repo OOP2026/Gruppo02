@@ -12,8 +12,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LezionePostgresDAO implements LezioneDAO {
+
+    private static final Logger LOGGER = Logger.getLogger(LezionePostgresDAO.class.getName());
 
     @Override
     public boolean inserisciLezione(Lezione lezione) {
@@ -27,7 +31,10 @@ public class LezionePostgresDAO implements LezioneDAO {
             ps.setString(5, lezione.getAula().getNome());
             ps.executeUpdate();
             return true;
-        } catch (SQLException e) { return false; }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Errore durante l'inserimento della lezione", e);
+            return false;
+        }
     }
 
     @Override
@@ -47,7 +54,9 @@ public class LezionePostgresDAO implements LezioneDAO {
                 Lezione l = new Lezione(ins, rs.getString("giorno_settimana"), rs.getString("ora_inizio"), rs.getString("ora_fine"), aula);
                 listaLezioni.add(l);
             }
-        } catch (SQLException e) { System.err.println("Errore recupero lezioni: " + e.getMessage()); }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Errore durante il recupero delle lezioni", e);
+        }
         return listaLezioni;
     }
 
@@ -69,7 +78,9 @@ public class LezionePostgresDAO implements LezioneDAO {
                     listaLezioni.add(l);
                 }
             }
-        } catch (SQLException e) { System.err.println("Errore recupero lezioni docente: " + e.getMessage()); }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Errore durante il recupero delle lezioni del docente", e);
+        }
         return listaLezioni;
     }
 
@@ -83,12 +94,14 @@ public class LezionePostgresDAO implements LezioneDAO {
             ps.setString(3, lezione.getOrainizio());
             ps.executeUpdate();
             return true;
-        } catch (SQLException e) { return false; }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Errore durante l'eliminazione della lezione", e);
+            return false;
+        }
     }
 
     @Override
     public boolean aggiornaLezione(Lezione lezione) {
-        // NON USATO - L'aggiornamento viene gestito nel controller tramite Elimina + Inserisci
         return false;
     }
 }

@@ -5,8 +5,12 @@ import Database.DBConnection;
 import model.Aula;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AulaPostgresDAO implements AulaDAO {
+
+    private static final Logger LOGGER = Logger.getLogger(AulaPostgresDAO.class.getName());
 
     @Override
     public ArrayList<Aula> getTutteLeAule() {
@@ -19,7 +23,7 @@ public class AulaPostgresDAO implements AulaDAO {
                 aule.add(new Aula(rs.getString("nome")));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Errore durante il recupero di tutte le aule", e);
         }
         return aule;
     }
@@ -33,7 +37,7 @@ public class AulaPostgresDAO implements AulaDAO {
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Errore inserimento aula: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Errore durante l'inserimento dell'aula", e);
             return false;
         }
     }
@@ -47,7 +51,7 @@ public class AulaPostgresDAO implements AulaDAO {
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Errore eliminazione aula: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Errore durante l'eliminazione dell'aula", e);
             return false;
         }
     }

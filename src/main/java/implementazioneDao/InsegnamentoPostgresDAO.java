@@ -6,8 +6,12 @@ import model.Docente;
 import model.Insegnamento;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class InsegnamentoPostgresDAO implements InsegnamentoDAO {
+
+    private static final Logger LOGGER = Logger.getLogger(InsegnamentoPostgresDAO.class.getName());
 
     @Override
     public ArrayList<Insegnamento> getTuttiInsegnamenti() {
@@ -22,7 +26,7 @@ public class InsegnamentoPostgresDAO implements InsegnamentoDAO {
                 lista.add(ins);
             }
         } catch (SQLException e) {
-            System.err.println("Errore nel recupero insegnamenti: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Errore nel recupero degli insegnamenti", e);
         }
         return lista;
     }
@@ -39,7 +43,7 @@ public class InsegnamentoPostgresDAO implements InsegnamentoDAO {
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Errore inserimento insegnamento: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Errore nell'inserimento dell'insegnamento", e);
             return false;
         }
     }
@@ -53,7 +57,7 @@ public class InsegnamentoPostgresDAO implements InsegnamentoDAO {
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Errore eliminazione insegnamento: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Errore nell'eliminazione dell'insegnamento", e);
             return false;
         }
     }
