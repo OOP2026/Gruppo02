@@ -1,7 +1,7 @@
 package implementazioneDao;
 
 import dao.LezioneDAO;
-import Database.DBConnection;
+import database.DBConnection;
 import model.Aula;
 import model.Docente;
 import model.Insegnamento;

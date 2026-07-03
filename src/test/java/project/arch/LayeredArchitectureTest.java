@@ -17,10 +17,10 @@ public class LayeredArchitectureTest {
             .layer("Boundaries").definedBy("gui..")
             .layer("Controls").definedBy("controller..")
             .layer("Entities").definedBy("model..")
-            .layer("Database").definedBy("implementazioneDao..")
+            .layer("database").definedBy("implementazioneDao..")
 
             .whereLayer("Boundaries").mayNotBeAccessedByAnyLayer()
             .whereLayer("Controls").mayOnlyBeAccessedByLayers("Boundaries")
             .whereLayer("Entities").mayOnlyBeAccessedByLayers("Controls")
-            .whereLayer("Database").mayOnlyBeAccessedByLayers("Controls");
+            .whereLayer("database").mayOnlyBeAccessedByLayers("Controls");
 }

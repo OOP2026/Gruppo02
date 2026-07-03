@@ -1,7 +1,7 @@
 package implementazioneDao;
 
 import dao.RichiestaSpostamentoDAO;
-import Database.DBConnection;
+import database.DBConnection;
 import model.*;
 import java.sql.*;
 import java.util.ArrayList;
