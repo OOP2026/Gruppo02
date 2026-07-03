@@ -1,7 +1,7 @@
 package implementazioneDao;
 
 import dao.AulaDAO;
-import Database.DBConnection;
+import database.DBConnection;
 import model.Aula;
 import java.sql.*;
 import java.util.ArrayList;

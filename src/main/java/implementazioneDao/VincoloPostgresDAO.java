@@ -1,7 +1,7 @@
 package implementazioneDao;
 
 import dao.VincoloDAO;
-import Database.DBConnection;
+import database.DBConnection;
 import model.Vincolo;
 import java.sql.*;
 import java.util.ArrayList;

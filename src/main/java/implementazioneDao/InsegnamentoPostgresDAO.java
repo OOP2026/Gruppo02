@@ -1,7 +1,7 @@
 package implementazioneDao;
 
 import dao.InsegnamentoDAO;
-import Database.DBConnection;
+import database.DBConnection;
 import model.Docente;
 import model.Insegnamento;
 import java.sql.*;
