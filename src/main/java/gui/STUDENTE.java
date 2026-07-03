@@ -15,6 +15,7 @@ public class STUDENTE extends JFrame{
 
     public STUDENTE(Controller controller, model.Studente studenteLoggato) {
         this.controller = controller;
+        this.studenteLoggato = studenteLoggato;
         setContentPane(panelStudente);
         setTitle("Orario Studente - "+studenteLoggato.getAnnoCorso()+"° Anno");
         setSize(800, 600);
