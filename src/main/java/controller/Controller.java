@@ -178,4 +178,24 @@ public class Controller {
 		}
 		return -1;
 	}
+	public String[] getFasceOrarie() {
+		return new String[]{"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
+	}
+
+	public javax.swing.table.DefaultTableModel creaModelloOrarioVuoto() {
+		String[] colonne = {"Orario", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"};
+		javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel(colonne, 0);
+		for (String ora : getFasceOrarie()) {
+			model.addRow(new Object[]{ora, "", "", "", "", ""});
+		}
+		return model;
+	}
+
+	public void gestisciLogout(javax.swing.JFrame frameAttuale) {
+		int scelta = javax.swing.JOptionPane.showConfirmDialog(frameAttuale, "Vuoi davvero uscire dal tuo account?", "Conferma Logout", javax.swing.JOptionPane.YES_NO_OPTION);
+		if (scelta == javax.swing.JOptionPane.YES_OPTION) {
+			frameAttuale.dispose();
+			new gui.Home(this).setVisible(true);
+		}
+	}
 }
