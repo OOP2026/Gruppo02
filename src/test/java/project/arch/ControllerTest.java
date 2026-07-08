@@ -1,18 +1,17 @@
-package project.arch; // Aggiunto per risolvere il "Missing package statement"
+package project.arch;
 
 import controller.Controller;
-import org.junit.Test; // Modificato per usare JUnit 4
-import static org.junit.Assert.*; // Modificato per usare JUnit 4
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class ControllerTest {
 
     @Test
     public void testMetodiCentralizzatiOrario() {
         Controller controller = new Controller();
-
-        // Facciamo testare al sistema i metodi per alzare la copertura
+        
         assertEquals(1, controller.getColonnaGiorno("Lunedì"));
-        assertEquals(2, controller.getColonnaGiorno("Martedì"));
+        assertEquals(2, controller.getColonnaGiorno(" Martedì "));
         assertEquals(-1, controller.getColonnaGiorno("Domenica"));
         assertEquals(-1, controller.getColonnaGiorno(null));
 
