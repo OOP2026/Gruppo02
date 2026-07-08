@@ -49,7 +49,7 @@ jobs:
           -Dsonar.qualitygate.wait=true
 
       - name: Publish Test Report
-        uses: dorny/test-reporter@31a54ee7ebcce03d3c8f9641487a1fd1f618dc2c
+        uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: Architectural Tests
@@ -58,7 +58,7 @@ jobs:
           fail-on-error: 'false'
 
       - name: Publish Code Coverage Report
-        uses: madrapps/jacoco-report@d360e2a5e12c1404177b9ce4d24177eb0579e000
+        uses: madrapps/jacoco-report@v1.6
         if: success() || failure()
         with:
           paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
