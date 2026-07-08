@@ -54,7 +54,6 @@ public class Controller {
 	public void eliminaLezione(Lezione lezione) { lezioneDAO.eliminaLezione(lezione); }
 
 	public ArrayList<Aula> getAule() { return aulaDAO.getTutteLeAule(); }
-	public ArrayList<Aula> getaule() { return aulaDAO.getTutteLeAule(); }
 	public int getNumeroAule() { return aulaDAO.getTutteLeAule().size(); }
 	public void aggiungiAula(Aula a) { aulaDAO.inserisciAula(a); }
 	public void rimuoviAula(Aula a) { aulaDAO.eliminaAula(a); }
