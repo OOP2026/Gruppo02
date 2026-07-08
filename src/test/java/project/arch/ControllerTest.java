@@ -71,7 +71,7 @@ public class ControllerTest {
         try { new gui.STUDENTE(controller, stud); } catch (Exception e) {}
         try { new gui.DOCENTE(controller, prof); } catch (Exception e) {}
 
-       
+
         assertTrue(true);
     }
 }

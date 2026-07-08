@@ -19,6 +19,14 @@ public class LezionePostgresDAO implements LezioneDAO {
 
     private static final Logger LOGGER = Logger.getLogger(LezionePostgresDAO.class.getName());
 
+    // METODO CENTRALIZZATO PER ELIMINARE LA DUPLICAZIONE DEI DATI
+    private Lezione estraiLezione(ResultSet rs) throws SQLException {
+        Docente docente = new Docente(rs.getString("prof_nome"), rs.getString("prof_cognome"), rs.getString("email"), rs.getString("password"));
+        Insegnamento ins = new Insegnamento(rs.getString("insegnamento_nome"), rs.getInt("cfu"), rs.getInt("anno_corso"), docente);
+        Aula aula = new Aula(rs.getString("aula_nome"));
+        return new Lezione(ins, rs.getString("giorno_settimana"), rs.getString("ora_inizio"), rs.getString("ora_fine"), aula);
+    }
+
     @Override
     public boolean inserisciLezione(Lezione lezione) {
         String query = "INSERT INTO Lezione (insegnamento_nome, giorno_settimana, ora_inizio, ora_fine, aula_nome) VALUES (?, ?, ?, ?, ?)";
@@ -48,11 +56,7 @@ public class LezionePostgresDAO implements LezioneDAO {
              PreparedStatement ps = conn.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Docente docente = new Docente(rs.getString("prof_nome"), rs.getString("prof_cognome"), rs.getString("email"), rs.getString("password"));
-                Insegnamento ins = new Insegnamento(rs.getString("insegnamento_nome"), rs.getInt("cfu"), rs.getInt("anno_corso"), docente);
-                Aula aula = new Aula(rs.getString("aula_nome"));
-                Lezione l = new Lezione(ins, rs.getString("giorno_settimana"), rs.getString("ora_inizio"), rs.getString("ora_fine"), aula);
-                listaLezioni.add(l);
+                listaLezioni.add(estraiLezione(rs)); // <- CODICE ACCORPATO! Niente più duplicati!
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Errore durante il recupero delle lezioni", e);
@@ -71,11 +75,7 @@ public class LezionePostgresDAO implements LezioneDAO {
             ps.setString(1, emailDocente);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Docente docente = new Docente(rs.getString("prof_nome"), rs.getString("prof_cognome"), rs.getString("email"), rs.getString("password"));
-                    Insegnamento ins = new Insegnamento(rs.getString("insegnamento_nome"), rs.getInt("cfu"), rs.getInt("anno_corso"), docente);
-                    Aula aula = new Aula(rs.getString("aula_nome"));
-                    Lezione l = new Lezione(ins, rs.getString("giorno_settimana"), rs.getString("ora_inizio"), rs.getString("ora_fine"), aula);
-                    listaLezioni.add(l);
+                    listaLezioni.add(estraiLezione(rs)); // <- CODICE ACCORPATO!
                 }
             }
         } catch (SQLException e) {
@@ -101,7 +101,5 @@ public class LezionePostgresDAO implements LezioneDAO {
     }
 
     @Override
-    public boolean aggiornaLezione(Lezione lezione) {
-        return false;
-    }
+    public boolean aggiornaLezione(Lezione lezione) { return false; }
 }
