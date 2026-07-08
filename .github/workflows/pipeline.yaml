@@ -49,7 +49,7 @@ jobs:
           -Dsonar.qualitygate.wait=true
          
       - name: Publish Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@31a54ee7ebcce03d3c8f9641487a1fd1f618dc2c
         if: success() || failure()
         with:
           name: Architectural Tests
