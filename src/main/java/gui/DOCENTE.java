@@ -21,6 +21,7 @@ public class DOCENTE extends JFrame {
     private DefaultListModel<String> modelloVincoli;
     private JButton rimuoviVincoloButton;
     private JButton btnLogout;
+    private String[] fasceOrarie = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
 
     public DOCENTE(Controller controller, model.Docente docenteLoggato) {
         this.controller = controller;
@@ -56,14 +57,21 @@ public class DOCENTE extends JFrame {
             }
         });
 
-
-        btnLogout.addActionListener(e -> controller.gestisciLogout(this));
+        btnLogout.addActionListener(e -> {
+            int scelta = JOptionPane.showConfirmDialog(this, "Vuoi davvero uscire dal tuo account?", "Conferma Logout", JOptionPane.YES_NO_OPTION);
+            if (scelta == JOptionPane.YES_OPTION) {
+                this.dispose();
+                new Home(controller).setVisible(true);
+            }
+        });
     }
 
     private void setupTabellaOrario() {
-        // Tabella e orari gestiti in un punto solo!
-        DefaultTableModel model = controller.creaModelloOrarioVuoto();
-        String[] fasceOrarie = controller.getFasceOrarie();
+        String[] colonne = {"Orario", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"};
+        DefaultTableModel model = new DefaultTableModel(colonne, 0);
+        for (String ora : fasceOrarie) {
+            model.addRow(new Object[]{ora, "", "", "", "", ""});
+        }
 
         if (controller.getTutteLezioni() != null) {
             for (model.Lezione lezione : controller.getTutteLezioni()) {
@@ -99,8 +107,8 @@ public class DOCENTE extends JFrame {
 
     private void apriPopupAggiungiVincolo() {
         JComboBox<String> comboGiorno = new JComboBox<>(new String[]{"Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"});
-        JComboBox<String> comboOraInizio = new JComboBox<>(controller.getFasceOrarie());
-        JComboBox<String> comboOraFine = new JComboBox<>(controller.getFasceOrarie());
+        JComboBox<String> comboOraInizio = new JComboBox<>(fasceOrarie);
+        JComboBox<String> comboOraFine = new JComboBox<>(fasceOrarie);
 
         JPanel myPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         myPanel.add(new JLabel("Giorno:"));
@@ -147,8 +155,8 @@ public class DOCENTE extends JFrame {
         }
 
         JComboBox<String> comboGiorno = new JComboBox<>(new String[]{"Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"});
-        JComboBox<String> comboInizio = new JComboBox<>(controller.getFasceOrarie());
-        JComboBox<String> comboFine = new JComboBox<>(controller.getFasceOrarie());
+        JComboBox<String> comboInizio = new JComboBox<>(fasceOrarie);
+        JComboBox<String> comboFine = new JComboBox<>(fasceOrarie);
 
         JTextArea txtNota = new JTextArea(4, 30);
         txtNota.setLineWrap(true);

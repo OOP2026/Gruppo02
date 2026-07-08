@@ -24,17 +24,26 @@ public class STUDENTE extends JFrame {
         setLocationRelativeTo(null);
         setupTabellaOrario();
 
-        logoutButton.addActionListener(e -> controller.gestisciLogout(this));
+        logoutButton.addActionListener(e -> {
+            int scelta = JOptionPane.showConfirmDialog(this, "Vuoi davvero uscire dal tuo account?", "Conferma Logout", JOptionPane.YES_NO_OPTION);
+            if (scelta == JOptionPane.YES_OPTION) {
+                this.dispose();
+                new Home(controller).setVisible(true);
+            }
+        });
     }
 
     private void setupTabellaOrario() {
-        DefaultTableModel model = controller.creaModelloOrarioVuoto();
-        String[] fasceOrarie = controller.getFasceOrarie();
+        String[] fasceOrarie = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
+        String[] colonne = {"Orario", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"};
+        DefaultTableModel model = new DefaultTableModel(colonne, 0);
+        for (String ora : fasceOrarie) {
+            model.addRow(new Object[]{ora, "", "", "", "", ""});
+        }
 
         if (controller.getTutteLezioni() != null && studenteLoggato != null) {
             for (model.Lezione lezione : controller.getTutteLezioni()) {
                 if (lezione.getInsegnamento() != null && lezione.getInsegnamento().getAnnoCorso() == studenteLoggato.getAnnoCorso()) {
-
                     int colonna = controller.getColonnaGiorno(lezione.getGiornoSettimana());
                     int riga = controller.getRigaOrario(lezione.getOrainizio(), fasceOrarie);
 
