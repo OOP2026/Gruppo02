@@ -8,7 +8,18 @@ import controller.Controller;
 import model.Docente;
 import model.Vincolo;
 import java.util.ArrayList;
-
+/**
+ * <h2>Dashboard Docente</h2>
+ * <p>Questa schermata è la postazione di lavoro dedicata al personale docente.
+ * Viene aperta dal Controller subito dopo il login se l'utente è profilato come docente.</p>
+ * * * <img src="doc-files/dash_docente.png" alt="Dashboard Docente" style="max-width: 80%; border: 1px solid black;">
+ * * <h3>Funzionalità principali:</h3>
+ * <ul>
+ * <li><b>Consultazione Orario:</b> Visualizzazione della tabella con le proprie lezioni assegnate per la settimana.</li>
+ * <li><b>Gestione Vincoli:</b> Inserimento e rimozione dei propri vincoli di indisponibilità (massimo 3 vincoli per docente), per segnalare i giorni in cui non si può insegnare.</li>
+ * <li><b>Richieste di Spostamento:</b> Modulo per inviare al Responsabile una richiesta ufficiale di spostamento per una lezione già programmata.</li>
+ * </ul>
+ */
 public class DOCENTE extends JFrame {
     private Controller controller;
     private model.Docente docenteLoggato;

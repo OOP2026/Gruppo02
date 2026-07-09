@@ -3,7 +3,17 @@ package gui;
 import javax.swing.*;
 import controller.Controller;
 import javax.swing.table.DefaultTableModel;
-
+/**
+ * <h2>Area Studente</h2>
+ * <p>Questa interfaccia è dedicata agli studenti iscritti all'università. È strutturata
+ * per essere semplice e di immediata consultazione.</p>
+ * * * <img src="doc-files/dash_studente.png" alt="Dashboard Studente" style="max-width: 80%; border: 1px solid black;">
+ * * <h3>Funzionalità principali:</h3>
+ * <ul>
+ * <li><b>Visualizzazione Orario Personalizzato:</b> Mostra una tabella dinamica che filtra e visualizza in automatico solo le lezioni relative all'anno di corso dello studente attualmente loggato.</li>
+ * <li><b>Logout Sicuro:</b> Pulsante per chiudere la sessione e tornare alla pagina di accesso iniziale.</li>
+ * </ul>
+ */
 public class STUDENTE extends JFrame {
     private Controller controller;
     private model.Studente studenteLoggato;

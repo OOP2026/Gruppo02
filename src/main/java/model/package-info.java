@@ -1,0 +1,19 @@
+/**
+ * <h1>Capitolo 4: Architettura dei Package - MODEL</h1>
+ * <p>Il package model rappresenta il cuore logico dell'applicazione. Qui sono state
+ * implementate le classi che mappano le entità reali dell'università, avvalendosi dei
+ * concetti di ereditarietà e polimorfismo.</p>
+ * Qui sotto puoi vedere il Diagramma delle Classi del nostro sistema:</p>
+ *  * * * <img src="doc-files/diagramma_uml.png" alt="Diagramma delle Classi del Model" style="max-width: 100%;">
+ * * <h2>Gestione delle Utenze e dei Ruoli</h2>
+ * <ul>
+ * <li><b>Utente:</b> Classe base che incapsula i concetti fondamentali di autenticazione.</li>
+ * <li><b>Responsabile:</b> Gestisce le anagrafiche, alloca le lezioni nelle aule e accetta le richieste.</li>
+ * <li><b>Docente:</b> Personale didattico. Possiede vincoli di orario e può richiedere spostamenti.</li>
+ * <li><b>Studente:</b> Utente base che visualizza l'orario relativo al proprio anno di corso.</li>
+ * </ul>
+ * * <h2>Processi e Struttura</h2>
+ * <p>Il sistema gestisce <b>Lezioni</b>, <b>Insegnamenti</b> e <b>Aule</b>, impedendo
+ * sovrapposizioni temporali nell'allocazione delle risorse.</p>
+ */
+package model;

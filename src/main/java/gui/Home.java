@@ -6,7 +6,14 @@ import model.Docente;
 import model.Responsabile;
 import model.Studente;
 import model.Utente;
-
+/**
+ * <h1>Capitolo 6: Manuale d'uso - Schermata di Login</h1>
+ * <p>La schermata di accesso è la prima cosa che l'utente vede quando avvia l'applicazione.
+ * Serve a proteggere i dati richiedendo l'inserimento di un'Email e di una Password.</p>
+ * * <img src="doc-files/login.png" alt="Schermata di Login" style="max-width: 80%; border: 1px solid black;">
+ * <p>Quando l'utente clicca sul pulsante per accedere, il Controller controlla nel database
+ * il ruolo dell'utente (Studente, Docente o Responsabile) e apre la dashboard corretta.</p>
+ */
 public class Home extends JFrame {
     private controller.Controller controller;
     private JPanel panelHome;

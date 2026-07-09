@@ -1,7 +1,13 @@
 package gui;
 
 import controller.Controller;
-
+/**
+ * <h2>Schermata di Registrazione</h2>
+ * <p>In questa schermata è possibile registrare un nuovo utente nel sistema (Studente o Docente).</p>
+ * * * <img src="doc-files/registrazione.png" alt="Schermata di Registrazione" style="max-width: 80%; border: 1px solid black;">
+ * * <p>I dati inseriti vengono validati e salvati in modo sicuro nel database. Nel caso degli studenti,
+ * viene richiesto l'anno di corso; nel caso dei docenti, si registrano i dati base.</p>
+ */
 import javax.swing.*;
 public class REGISTRAZIONE extends javax.swing.JFrame {
     private controller.Controller controller;

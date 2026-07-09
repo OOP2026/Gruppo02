@@ -5,7 +5,19 @@ import controller.Controller;
 import model.Responsabile;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-
+/**
+ * <h2>Dashboard Responsabile</h2>
+ * <p>La Dashboard è la pagina principale per l'utente Responsabile. È stata progettata
+ * come un centro di controllo da cui è possibile raggiungere tutte le funzioni di
+ * gestione della struttura universitaria.</p>
+ * * * <img src="doc-files/dash_responsabile.png" alt="Dashboard Responsabile" style="max-width: 80%; border: 1px solid black;">
+ * * <h3>Funzionalità principali:</h3>
+ * <ul>
+ * <li><b>Gestione Didattica:</b> Inserimento di nuove Aule e Insegnamenti.</li>
+ * <li><b>Pianificazione Orario:</b> Assegnazione delle Lezioni assicurandosi che non ci siano aule occupate contemporaneamente.</li>
+ * <li><b>Gestione Richieste:</b> Accettazione o rifiuto delle richieste di spostamento inviate dai docenti.</li>
+ * </ul>
+ */
 public class RESPONSABILE extends JFrame {
 
     private Controller controller;

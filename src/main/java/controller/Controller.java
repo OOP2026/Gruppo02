@@ -37,7 +37,18 @@ public class Controller {
 	public ArrayList<Lezione> getTutteLezioni() { return lezioneDAO.getTutteLezioni(); }
 	public int getNumeroLezioni() { return lezioneDAO.getTutteLezioni().size(); }
 	public ArrayList<Lezione> getLezioniDelDocente(Docente prof) { return lezioneDAO.getLezioniDelDocente(prof.getEmail()); }
-
+	/**
+	 * Tenta di creare e inserire una nuova lezione nel sistema.
+	 * * @param nuovaLezione L'oggetto Lezione contenente orario, aula e insegnamento.
+	 * @return true se la lezione è stata inserita con successo, false altrimenti.
+	 * * @implNote <b>Flusso di esecuzione (Sequence):</b>
+	 * <ol>
+	 * <li>Verifica se il Docente ha un Vincolo che blocca questo giorno/orario.</li>
+	 * <li>Richiama {@code rilevaConflitti()} per controllare se l'Aula è già occupata.</li>
+	 * <li>Richiama {@code rilevaConflitti()} per controllare se il Docente sta già insegnando.</li>
+	 * <li>Se tutti i controlli passano, invia la lezione al DAO per il salvataggio nel Database.</li>
+	 * </ol>
+	 */
 	public boolean creaLezione(Lezione nuovaLezione) {
 		Docente docente = nuovaLezione.getInsegnamento().getDocente();
 		for (Vincolo v : vincoloDAO.getVincoliPerDocente(docente.getEmail())) {
