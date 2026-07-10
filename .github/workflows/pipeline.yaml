@@ -19,7 +19,6 @@ permissions:
   contents: read
   actions: read
   checks: write
-  pull-requests: write # <-- Aggiunto permesso necessario per scrivere il commento nella PR
 jobs:
   build:
     name: Quality Analysis
@@ -60,8 +59,7 @@ jobs:
 
       - name: Publish Code Coverage Report
         uses: madrapps/jacoco-report@v1.8.0
-        # <-- Combinato: esegue sempre (anche se i test falliscono) MA solo sulle Pull Request
-        if: (success() || failure()) && github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && (success() || failure())
         with:
           paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
