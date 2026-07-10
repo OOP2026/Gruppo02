@@ -1,14 +1,19 @@
 package gui;
 
 import controller.Controller;
+import javax.swing.*;
 /**
  * <h2>Schermata di Registrazione</h2>
- * <p>In questa schermata è possibile registrare un nuovo utente nel sistema (Studente o Docente).</p>
+ * <p>Questa interfaccia permette di aggiungere un nuovo utente al sistema,
+ * consentendo la scelta del ruolo tra <b>Studente</b> e <b>Docente</b>.</p>
  * * * <img src="doc-files/registrazione.png" alt="Schermata di Registrazione" style="max-width: 80%; border: 1px solid black;">
- * * <p>I dati inseriti vengono validati e salvati in modo sicuro nel database. Nel caso degli studenti,
- * viene richiesto l'anno di corso; nel caso dei docenti, si registrano i dati base.</p>
+ * * <h3>Funzionamento e Logica:</h3>
+ * <ul>
+ * <li><b>Inserimento Dati:</b> L'utente compila i campi anagrafici (Nome, Cognome, Email, Password).</li>
+ * <li><b>Campi Dinamici:</b> Se si seleziona il ruolo "Studente", l'interfaccia richiede dinamicamente la matricola e l'Anno di Corso, se si seleziona Docente, l'interfaccia richiede dinamicamente la meteria.</li>
+ * <li><b>Salvataggio:</b> Al click sul pulsante "Registrati", la GUI invia i dati raccolti al Controller per la validazione e il successivo inserimento tramite DAO nel Database.</li>
+ * </ul>
  */
-import javax.swing.*;
 public class REGISTRAZIONE extends javax.swing.JFrame {
     private controller.Controller controller;
     private JPanel panelRegistrazione;
@@ -27,11 +32,14 @@ public class REGISTRAZIONE extends javax.swing.JFrame {
     private JLabel lblAnno;
 
     public REGISTRAZIONE(Controller controller) {
+        this.setSize(400, 800);
+        this.setLocationRelativeTo(null);
         this.setContentPane(panelRegistrazione);
         this.setTitle("Registrazione Utente");
         this.controller = controller;
         radioStudente.setSelected(true);
         txtMateria.setVisible(false);
+        lblMateria.setVisible(false);
         radioStudente.addActionListener(e -> {
             txtMatricola.setVisible(true);
             lblMatricola.setVisible(true);

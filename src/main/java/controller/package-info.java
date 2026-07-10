@@ -1,5 +1,5 @@
 /**
- * <h1>Capitolo 5: Features e Controlli - CONTROLLER</h1>
+ * <h1> Features e Controlli - CONTROLLER</h1>
  * <p>Questo package contiene il Controller, il quale agisce come gestore dello stato
  * applicativo e come garante assoluto dell'integrità dei dati (Pattern MVC).</p>
  * * <h2>Responsabilità principali:</h2>
