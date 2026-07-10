@@ -26,6 +26,14 @@ public class Controller {
 		utenteDAO.registraDocente(docente);
 		docenti.add(docente);
 	}
+	/**
+	 * Tenta di autenticare un utente nel sistema.
+	 * @param email L'indirizzo email dell'utente.
+	 * @param password La password in chiaro.
+	 * @return "STUDENTE", "DOCENTE" o "RESPONSABILE" in caso di successo, "ERRORE" altrimenti.
+	 * * <h3>Sequence Diagram: Login nel Sistema</h3>
+	 * <img src="doc-files/seq_login.png" alt="Sequence Diagram Login" style="max-width: 100%;">
+	 */
 	public boolean effettuaLogin(String email, String password) {
 		utenteLoggato = utenteDAO.login(email, password);
 		return utenteLoggato != null;
@@ -41,8 +49,8 @@ public class Controller {
 	 * Tenta di creare e inserire una nuova lezione nel sistema.
 	 * * @param nuovaLezione L'oggetto Lezione contenente orario, aula e insegnamento.
 	 * @return true se la lezione è stata inserita con successo, false altrimenti.
-	 * * @implNote <b>Flusso di esecuzione (Sequence):</b>
-	 * <ol>
+	 * <h3>Sequence Diagram: Creazione Lezione</h3>
+	 * <img src="doc-files/seq_crea_lezione.png" alt="Sequence Diagram Creazione Lezione" style="max-width: 100%;">
 	 * <li>Verifica se il Docente ha un Vincolo che blocca questo giorno/orario.</li>
 	 * <li>Richiama {@code rilevaConflitti()} per controllare se l'Aula è già occupata.</li>
 	 * <li>Richiama {@code rilevaConflitti()} per controllare se il Docente sta già insegnando.</li>
